@@ -47,21 +47,7 @@ function AppNew() {
       return () => clearInterval(interval);
     }
   }, [mode, examState]);
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
 
-    if (mode === 'exam' && examState && examState.timeRemaining > 0) {
-      timer = setInterval(() => {
-        handleTimerTick(examState.timeRemaining - 1);
-      }, 1000);
-    } else if (examState?.timeRemaining === 0) {
-      handleTimeUp();
-    }
-
-    return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, [mode, examState?.timeRemaining, handleTimerTick, handleTimeUp]);
 
   const handleSelectExam = (examId: string) => {
     const examConfig = getExamConfig(examId);
@@ -88,6 +74,21 @@ function AppNew() {
   const handleTimeUp = useCallback(() => {
     handleSubmitExam();
   }, []);
+  useEffect(() => {
+    let timer: number;
+
+    if (mode === 'exam' && examState && examState.timeRemaining > 0) {
+      timer = window.setInterval(() => {
+        handleTimerTick(examState.timeRemaining - 1);
+      }, 1000);
+    } else if (mode === 'exam' && examState?.timeRemaining === 0) {
+      handleTimeUp();
+    }
+
+    return () => {
+      if (timer) window.clearInterval(timer);
+    };
+  }, [mode, examState?.timeRemaining, handleTimerTick, handleTimeUp]);
 
   const handleAnswerSelect = (answer: 'A' | 'B' | 'C' | 'D') => {
     if (!examState) return;
