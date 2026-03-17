@@ -2,6 +2,8 @@ export type QuestionStatus = 'not-visited' | 'answered' | 'not-answered' | 'mark
 
 export type Topic = 'Polity' | 'History' | 'Economy' | 'Geography' | 'Science' | 'Environment';
 
+export type ExamCategory = 'upsc' | 'cuet' | 'ssc' | 'neet';
+
 export interface Question {
   id: number;
   text: string;
@@ -25,6 +27,7 @@ export interface UserResponse {
 }
 
 export interface ExamState {
+  examId: string;
   currentQuestionIndex: number;
   responses: UserResponse[];
   timeRemaining: number;
@@ -32,12 +35,27 @@ export interface ExamState {
   startTime: number;
 }
 
+export interface ExamConfig {
+  id: string;
+  title: string;
+  category: ExamCategory;
+  year: number;
+  duration: number;
+  marking: {
+    correct: number;
+    wrong: number;
+  };
+  totalQuestions: number;
+}
+
 export interface Result {
+  examId: string;
   totalScore: number;
   accuracy: number;
   correctCount: number;
   incorrectCount: number;
   unattemptedCount: number;
+  percentile?: number;
   topicWise: {
     topic: Topic;
     correct: number;
@@ -45,4 +63,14 @@ export interface Result {
     unattempted: number;
     total: number;
   }[];
+  completedAt: number;
+}
+
+export interface ExamAttempt {
+  id: string;
+  examId: string;
+  examTitle: string;
+  score: number;
+  accuracy: number;
+  attemptedAt: number;
 }

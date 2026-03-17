@@ -1,6 +1,15 @@
 import { Question } from '../types';
+import { upsc2021Questions } from './upsc-2021';
 
-export const questions: Question[] =[
+export const questions: Record<string, Question[]> = {
+  'upsc-2021': upsc2021Questions,
+};
+
+export const getAllQuestionsForExam = (examId: string): Question[] => {
+  return questions[examId] || [];
+};
+
+const allQuestions: Question[] =[
   {
     id: 1,
     text: "Consider the following statements :\n1. The Governor of the Reserve Bank of India (RBI) is appointed by the Central Government.\n2. Certain provisions in the Constitution of India give the Central Government the right to issue directions to the RBI in public interest.\n3. The Governor of the RBI draws his power from the RBI Act.\nWhich of the above statements are correct?",

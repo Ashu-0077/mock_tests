@@ -1,18 +1,19 @@
-import { ExamState, UserResponse } from '../types';
+import { ExamState, UserResponse, ExamAttempt } from '../types';
 
-const STORAGE_KEY = 'upsc_exam_state';
+const getExamStateKey = (examId: string) => `exam_state_${examId}`;
+const ATTEMPTS_KEY = 'exam_attempts';
 
 export const saveExamState = (state: ExamState): void => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(getExamStateKey(state.examId), JSON.stringify(state));
   } catch (error) {
     console.error('Error saving exam state:', error);
   }
 };
 
-export const loadExamState = (): ExamState | null => {
+export const loadExamState = (examId: string): ExamState | null => {
   try {
-    const data = localStorage.getItem(STORAGE_KEY);
+    const data = localStorage.getItem(getExamStateKey(examId));
     return data ? JSON.parse(data) : null;
   } catch (error) {
     console.error('Error loading exam state:', error);
@@ -20,15 +21,15 @@ export const loadExamState = (): ExamState | null => {
   }
 };
 
-export const clearExamState = (): void => {
+export const clearExamState = (examId: string): void => {
   try {
-    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(getExamStateKey(examId));
   } catch (error) {
     console.error('Error clearing exam state:', error);
   }
 };
 
-export const initializeExamState = (totalQuestions: number): ExamState => {
+export const initializeExamState = (examId: string, totalQuestions: number, duration: number): ExamState => {
   const responses: UserResponse[] = Array.from({ length: totalQuestions }, (_, i) => ({
     questionId: i + 1,
     isMarkedForReview: false,
@@ -36,10 +37,36 @@ export const initializeExamState = (totalQuestions: number): ExamState => {
   }));
 
   return {
+    examId,
     currentQuestionIndex: 0,
     responses,
-    timeRemaining: 120 * 60,
+    timeRemaining: duration * 60,
     isSubmitted: false,
     startTime: Date.now(),
   };
+};
+
+export const saveExamAttempt = (attempt: ExamAttempt): void => {
+  try {
+    const attempts = getExamAttempts();
+    attempts.push(attempt);
+    localStorage.setItem(ATTEMPTS_KEY, JSON.stringify(attempts));
+  } catch (error) {
+    console.error('Error saving exam attempt:', error);
+  }
+};
+
+export const getExamAttempts = (): ExamAttempt[] => {
+  try {
+    const data = localStorage.getItem(ATTEMPTS_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch (error) {
+    console.error('Error loading exam attempts:', error);
+    return [];
+  }
+};
+
+export const getRecentAttempts = (limit: number = 5): ExamAttempt[] => {
+  const attempts = getExamAttempts();
+  return attempts.sort((a, b) => b.attemptedAt - a.attemptedAt).slice(0, limit);
 };

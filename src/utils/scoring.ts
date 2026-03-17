@@ -1,9 +1,6 @@
 import { Question, UserResponse, Result, Topic } from '../types';
 
-export const calculateResults = (
-  questions: Question[],
-  responses: UserResponse[]
-): Result => {
+export const calculateResults = (questions: Question[], responses: UserResponse[]): Result => {
   let totalScore = 0;
   let correctCount = 0;
   let incorrectCount = 0;
@@ -47,12 +44,14 @@ export const calculateResults = (
   }));
 
   return {
+    examId: '',
     totalScore: Math.round(totalScore * 100) / 100,
     accuracy: Math.round(accuracy * 100) / 100,
     correctCount,
     incorrectCount,
     unattemptedCount,
     topicWise,
+    completedAt: Date.now(),
   };
 };
 
