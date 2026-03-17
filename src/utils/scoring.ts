@@ -1,6 +1,5 @@
 import { Question, UserResponse, Result, Topic, ExamConfig } from '../types';
 
-// Notice the third parameter 'config: ExamConfig'
 export const calculateResults = (
   questions: Question[], 
   responses: UserResponse[], 
@@ -11,7 +10,6 @@ export const calculateResults = (
   let incorrectCount = 0;
   let unattemptedCount = 0;
 
-  // Use marking weights from the registry
   const { correct: correctWeight, wrong: negativeWeight } = config.marking;
 
   const topicWiseMap = new Map<Topic, { correct: number; incorrect: number; unattempted: number; total: number }>();
@@ -59,4 +57,14 @@ export const calculateResults = (
     topicWise,
     completedAt: Date.now(),
   };
+};
+
+/**
+ * RESTORING THIS FUNCTION FIXES THE BUILD ERROR
+ */
+export const getQuestionStatus = (response: UserResponse): 'not-visited' | 'answered' | 'not-answered' | 'marked-review' => {
+  if (!response.isVisited) return 'not-visited';
+  if (response.isMarkedForReview) return 'marked-review';
+  if (response.selectedAnswer) return 'answered';
+  return 'not-answered';
 };
