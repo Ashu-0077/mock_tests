@@ -204,13 +204,18 @@ function AppNew() {
 
   const handleSubmitExam = () => {
     if (!examState) return;
+    
+    // 1. Get the questions and the exam configuration
     const questions = getAllQuestionsForExam(examState.examId);
     const examConfig = getExamConfig(examState.examId);
     
-    // Safety check to ensure examConfig exists
-    if (!examConfig) return;
+    // 2. Safety guard: if no config is found, don't proceed
+    if (!examConfig) {
+      console.error("Exam configuration not found!");
+      return;
+    }
 
-    // Passing 3 arguments: questions, responses, and config
+    // 3. Pass the config as the 3rd argument to fix the TypeScript error
     const calculatedResult = calculateResults(questions, examState.responses, examConfig);
 
     const attempt: ExamAttempt = {
