@@ -3,13 +3,14 @@ import { Question, UserResponse, Result, Topic, ExamConfig } from '../types';
 export const calculateResults = (
   questions: Question[], 
   responses: UserResponse[], 
-  config: ExamConfig // Pass the config here
+  config: ExamConfig // Ensure this is here
 ): Result => {
   let totalScore = 0;
   let correctCount = 0;
   let incorrectCount = 0;
   let unattemptedCount = 0;
 
+  // Pull marking weights directly from the exam config
   const { correct: correctWeight, wrong: negativeWeight } = config.marking;
 
   const topicWiseMap = new Map<Topic, { correct: number; incorrect: number; unattempted: number; total: number }>();
@@ -23,19 +24,17 @@ export const calculateResults = (
 
     const response = responses.find(r => r.questionId === question.id);
 
-    if (question.isDropped) {
-      return;
-    }
+    if (question.isDropped) return;
 
     if (!response?.selectedAnswer) {
       unattemptedCount++;
       topicData.unattempted++;
     } else if (response.selectedAnswer === question.correctAnswer) {
-      totalScore += correctWeight; // Use dynamic weight
+      totalScore += correctWeight; 
       correctCount++;
       topicData.correct++;
     } else {
-      totalScore += negativeWeight; // Use dynamic weight (negativeWeight is already negative in your config)
+      totalScore += negativeWeight; // Adding a negative number (e.g., -0.66)
       incorrectCount++;
       topicData.incorrect++;
     }
@@ -50,7 +49,7 @@ export const calculateResults = (
   }));
 
   return {
-    examId: config.id,
+    examId: config.id, // Use config ID
     totalScore: Math.round(totalScore * 100) / 100,
     accuracy: Math.round(accuracy * 100) / 100,
     correctCount,
