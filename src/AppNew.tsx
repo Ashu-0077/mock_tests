@@ -47,6 +47,21 @@ function AppNew() {
       return () => clearInterval(interval);
     }
   }, [mode, examState]);
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+
+    if (mode === 'exam' && examState && examState.timeRemaining > 0) {
+      timer = setInterval(() => {
+        handleTimerTick(examState.timeRemaining - 1);
+      }, 1000);
+    } else if (examState?.timeRemaining === 0) {
+      handleTimeUp();
+    }
+
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [mode, examState?.timeRemaining, handleTimerTick, handleTimeUp]);
 
   const handleSelectExam = (examId: string) => {
     const examConfig = getExamConfig(examId);
