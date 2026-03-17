@@ -205,13 +205,17 @@ function AppNew() {
   const handleSubmitExam = () => {
     if (!examState) return;
     const questions = getAllQuestionsForExam(examState.examId);
-    const calculatedResult = calculateResults(questions, examState.responses);
-    const examConfig = getExamConfig(examState.examId);
+    const examConfig = getExamConfig(examState.examId); // Get the config first
+    
+    if (!examConfig) return; // Guard clause
+
+    // Pass examConfig as the third argument
+    const calculatedResult = calculateResults(questions, examState.responses, examConfig);
 
     const attempt: ExamAttempt = {
       id: `${examState.examId}_${Date.now()}`,
       examId: examState.examId,
-      examTitle: examConfig?.title || '',
+      examTitle: examConfig.title,
       score: calculatedResult.totalScore,
       accuracy: calculatedResult.accuracy,
       attemptedAt: Date.now(),
