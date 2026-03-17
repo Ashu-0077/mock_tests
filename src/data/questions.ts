@@ -567,7 +567,7 @@ export const questions: Question[] =[
       A: "Bal Gangadhar Tilak",
       B: "Jawaharlal Nehru",
       C: "Mohandas Karamchand Gandhi",
-      |D: "Sarojini Naidu"
+      D: "Sarojini Naidu"
     },
     correctAnswer: "C",
     topic: "History",
