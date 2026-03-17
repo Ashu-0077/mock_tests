@@ -1,10 +1,16 @@
-import { Question, UserResponse, Result, Topic } from '../types';
+import { Question, UserResponse, Result, Topic, ExamConfig } from '../types';
 
-export const calculateResults = (questions: Question[], responses: UserResponse[]): Result => {
+export const calculateResults = (
+  questions: Question[], 
+  responses: UserResponse[], 
+  config: ExamConfig // Pass the config here
+): Result => {
   let totalScore = 0;
   let correctCount = 0;
   let incorrectCount = 0;
   let unattemptedCount = 0;
+
+  const { correct: correctWeight, wrong: negativeWeight } = config.marking;
 
   const topicWiseMap = new Map<Topic, { correct: number; incorrect: number; unattempted: number; total: number }>();
 
@@ -25,11 +31,11 @@ export const calculateResults = (questions: Question[], responses: UserResponse[
       unattemptedCount++;
       topicData.unattempted++;
     } else if (response.selectedAnswer === question.correctAnswer) {
-      totalScore += 2.0;
+      totalScore += correctWeight; // Use dynamic weight
       correctCount++;
       topicData.correct++;
     } else {
-      totalScore -= 0.666;
+      totalScore += negativeWeight; // Use dynamic weight (negativeWeight is already negative in your config)
       incorrectCount++;
       topicData.incorrect++;
     }
@@ -44,7 +50,7 @@ export const calculateResults = (questions: Question[], responses: UserResponse[
   }));
 
   return {
-    examId: '',
+    examId: config.id,
     totalScore: Math.round(totalScore * 100) / 100,
     accuracy: Math.round(accuracy * 100) / 100,
     correctCount,
@@ -53,11 +59,4 @@ export const calculateResults = (questions: Question[], responses: UserResponse[
     topicWise,
     completedAt: Date.now(),
   };
-};
-
-export const getQuestionStatus = (response: UserResponse): 'not-visited' | 'answered' | 'not-answered' | 'marked-review' => {
-  if (!response.isVisited) return 'not-visited';
-  if (response.isMarkedForReview) return 'marked-review';
-  if (response.selectedAnswer) return 'answered';
-  return 'not-answered';
 };
