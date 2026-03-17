@@ -1,16 +1,17 @@
 import { Question, UserResponse, Result, Topic, ExamConfig } from '../types';
 
+// Notice the third parameter 'config: ExamConfig'
 export const calculateResults = (
   questions: Question[], 
   responses: UserResponse[], 
-  config: ExamConfig // Ensure this is here
+  config: ExamConfig 
 ): Result => {
   let totalScore = 0;
   let correctCount = 0;
   let incorrectCount = 0;
   let unattemptedCount = 0;
 
-  // Pull marking weights directly from the exam config
+  // Use marking weights from the registry
   const { correct: correctWeight, wrong: negativeWeight } = config.marking;
 
   const topicWiseMap = new Map<Topic, { correct: number; incorrect: number; unattempted: number; total: number }>();
@@ -34,7 +35,7 @@ export const calculateResults = (
       correctCount++;
       topicData.correct++;
     } else {
-      totalScore += negativeWeight; // Adding a negative number (e.g., -0.66)
+      totalScore += negativeWeight; 
       incorrectCount++;
       topicData.incorrect++;
     }
@@ -49,7 +50,7 @@ export const calculateResults = (
   }));
 
   return {
-    examId: config.id, // Use config ID
+    examId: config.id,
     totalScore: Math.round(totalScore * 100) / 100,
     accuracy: Math.round(accuracy * 100) / 100,
     correctCount,
