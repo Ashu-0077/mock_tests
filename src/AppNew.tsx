@@ -205,11 +205,12 @@ function AppNew() {
   const handleSubmitExam = () => {
     if (!examState) return;
     const questions = getAllQuestionsForExam(examState.examId);
-    const examConfig = getExamConfig(examState.examId); // Get the config first
+    const examConfig = getExamConfig(examState.examId);
     
-    if (!examConfig) return; // Guard clause
+    // Safety check to ensure examConfig exists
+    if (!examConfig) return;
 
-    // Pass examConfig as the third argument
+    // Passing 3 arguments: questions, responses, and config
     const calculatedResult = calculateResults(questions, examState.responses, examConfig);
 
     const attempt: ExamAttempt = {
